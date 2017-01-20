@@ -1,0 +1,11 @@
+<div :id="style.PageDemo">
+    <div class="{{ style['area-left'] }}" v-if="lineChartOption">
+        <line-chart :chart-option="lineChartOption"
+                    @chart-click="onChartClick">
+        </line-chart>
+    </div>
+    <div class="{{ style['area-right'] }}">
+        <histogram-chart :chart-option="histogramChartOption">
+        </histogram-chart>
+    </div>
+</div>

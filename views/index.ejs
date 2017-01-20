@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PKU-TEST</title>
+    <meta charset="utf-8"/>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <!--favicon-->
+    <% if (assets.favicon) { %>
+    <link rel="shortcut icon" href="<%= assets.favicon %>">
+    <%  } %>
+    <!--css-->
+    <% if (assets.css) { %>
+        <% for(var i = 0, v; v = assets.css[i]; i++) { %>
+        <link rel="stylesheet" href="<%= v %>">
+        <%  } %>
+    <%  } %>
+    <!--webpack.vendor-->
+    <% if (assets.webpack.vendor && assets.webpack.vendor.css) { %>
+    <link rel="stylesheet" href="<%= assets.webpack.vendor.css %>">
+    <%  } %>
+    <!--webpack.self-->
+    <% if (assets.webpack.index && assets.webpack.index.css) { %>
+    <link rel="stylesheet" href="<%= assets.webpack.index.css %>">
+    <%  } %>
+</head>
+<body>
+    <app></app>
+    <!--externals-->
+    <% if (assets.externals) { %>
+        <% for(var i = 0, v; v = assets.externals[i]; i++) { %>
+        <script src="<%= v %>"></script>
+        <%  } %>
+    <%  } %>
+    <!--webpack.vendor-->
+    <% if (assets.webpack.vendor && assets.webpack.vendor.js) { %>
+    <script src="<%= assets.webpack.vendor.js %>"></script>
+    <%  } %>
+    <!--webpack.self-->
+    <% if (assets.webpack.index && assets.webpack.index.js) { %>
+    <script src="<%= assets.webpack.index.js %>"></script>
+    <%  } %>
+</body>
+</html>

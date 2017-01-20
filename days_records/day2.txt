@@ -1,0 +1,30 @@
+1、安装一个UI库 ✅
+2、安装D3 v3 ✅
+3、安装ECharts ✅
+4、确定文档结构 header + main + footer ✅
+5、router + 异步组件 + page.js ✅
+6、webstorm 配置lint
+
+历史：
+
+Backbone （MVC）
+Knockout（MVVM 双向绑定）
+Angular 1 （MVC + 双向绑定）性能差
+Vue React Angular 2 （ES5+）（MVVM 双向绑定）awalong
+
+最佳实践：
+
+Vue + Vuex (src) + Less + PostCSS
+Gulp + Webpack + Proxy + HotReload + Lint ... (Project Build | Project Env)
+
+模块化：
+全局变量 window(browser) 或 global(node)
+AMD (requirejs) define && define.amd
+CMD (nodejs) exports && && module && module.exports
+UMD = 全兼容
+
+规范：
+
+1、安装包 --save（生产环境依赖） --save-dev（开发环境依赖）
+2、引用包 包大小 > 150k建议通过配置'config.custom.js'进行引用
+			  <= 150k直接通过'import'进行引用

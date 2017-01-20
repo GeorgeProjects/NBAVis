@@ -11,7 +11,7 @@ import PlayerChangements from './PlayerChangements'
 import TimeLine from './TimeLine'
 import TeamInfo from './TeamInfo'
 import PlayerInfo from './PlayerInfo'
-import routers from './routers'
+// import routers from './routers'
 import {activeRouter} from '../../vuex/getters'
 
 export default {

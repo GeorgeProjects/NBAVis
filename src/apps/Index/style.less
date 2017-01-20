@@ -1,3 +1,10 @@
+/**
+ * AppIndex是整个SPA
+ * 除最上方的AppHeaders
+ * 把项目的外面框架主要分为5部分, 左右两栏,
+ * 左从上到下分为三个部分, 上中下
+ * 右从上到下主要分为两个部分, 上下
+ */
 @import "../../commons/vars";
 
 html,
@@ -23,55 +30,81 @@ body {
   left: 0%;
   right: 0%;
   overflow: hidden;
-  background-color: #00b3ee;
 }
 
-#StoryLine {
+//StoryLine + PlayerChangements + TimeLine
+#LeftWrapper {
   position: absolute;
   top: @app-header-height;
-  bottom: 30%;
+  bottom: 0%;
   left: 0%;
-  right: 30%;
-  overflow: hidden;
-  background-color: #00ff00;
-}
-
-#PlayerChangement {
-  position: absolute;
-  top: 70%;
-  bottom: 10%;
-  left: 0%;
-  right: 30%;
+  right: 20%;
   overflow: hidden;
   background-color: red;
+
+  //StoryLine
+  #LeftTopWrapper {
+    position: absolute;
+    top: 0%;
+    bottom: 30%;
+    left: 0%;
+    right: 0%;
+    overflow: hidden;
+    background-color: #00ff00;
+  }
+
+  //PlayerChangements
+  #LeftMiddleWrapper {
+    position: absolute;
+    top: 70%;
+    bottom: 10%;
+    left: 0%;
+    right: 0%;
+    overflow: hidden;
+    background-color: red;
+  }
+
+  //TimeLine
+  #LeftBottomWrapper {
+    position: absolute;
+    top: 90%;
+    bottom: 0%;
+    left: 0%;
+    right: 0%;
+    overflow: hidden;
+    background-color: hotpink;
+  }
 }
 
-#TimeLine {
-  position: absolute;
-  top: 90%;
-  bottom: 0%;
-  left: 0%;
-  right: 30%;
-  overflow: hidden;
-  background-color: hotpink;
-}
-
-#TeamInfo {
+//TeamInfo + PlayerInfo
+#RightWrapper {
   position: absolute;
   top: @app-header-height;
-  bottom: 50%;
-  left: 70%;
-  right: 0%;
-  overflow: hidden;
-  background-color: honeydew;
-}
-
-#PlayerInfo {
-  position: absolute;
-  top: 50%;
   bottom: 0%;
-  left: 70%;
+  left: 80%;
   right: 0%;
   overflow: hidden;
-  background-color: purple;
+  background-color: white;
+
+  //TeamInfo
+  #RightTopWrapper {
+    position: absolute;
+    top: 0%;
+    bottom: 30%;
+    left: 0%;
+    right: 0%;
+    overflow: hidden;
+    background-color: honeydew;
+  }
+
+  //PlayerInfo
+  #RightBottomWrapper {
+    position: absolute;
+    top: 70%;
+    bottom: 0%;
+    left: 0%;
+    right: 0%;
+    overflow: hidden;
+    background-color: purple;
+  }
 }

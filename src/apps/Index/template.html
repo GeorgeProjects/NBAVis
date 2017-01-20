@@ -1,8 +1,24 @@
 <div id="{{ style.AppIndex }}">
-    <app-header id="{{ style.AppHeader }}"></app-header>
-    <story-line id="{{ style.StoryLine }}"></story-line>
-    <player-changements id="{{ style.PlayerChangement }}"></player-changements>
-    <time-line id="{{ style.TimeLine }}"></time-line>
-    <team-info id="{{ style.TeamInfo }}"></team-info>
-    <player-info id="{{ style.PlayerInfo }}"></player-info>
+    <div id="{{ style.AppHeader }}">
+        <app-header></app-header>
+    </div>
+    <div id="{{ style.LeftWrapper }}">
+        <div id="{{ style.LeftTopWrapper }}">
+            <story-line></story-line>
+        </div>
+        <div id="{{ style.LeftMiddleWrapper }}">
+            <player-changements></player-changements>
+        </div>
+        <div id="{{ style.LeftBottomWrapper }}">
+            <time-line></time-line>
+        </div>
+    </div>
+    <div id="{{ style.RightWrapper }}">
+        <div id="{{ style.RightTopWrapper }}">
+            <team-info></team-info>
+        </div>
+        <div id="{{ style.RightBottomWrapper }}">
+            <player-info></player-info>
+        </div>
+    </div>
 </div>

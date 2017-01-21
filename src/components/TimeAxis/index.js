@@ -39,15 +39,18 @@ export default {
     },
     render () {
       if (this.teamData) {
-        let xScale = d3.time.scale().range([0, this.width - this.padding.left - this.padding.right])
-          .domain([new Date(this.start, 1, 1), new Date(this.end - 1, 12, 31)])
+        let xScale = d3.scale.ordinal()
+          .domain([1985, 2015])
+          .rangeRoundBands([0, this.width - this.padding.left - this.padding.right])
+        // let xScale = d3.time.scale().range([0, this.width - this.padding.left - this.padding.right])
+        //   .domain([new Date(this.start, 1, 1), new Date(this.end - 1, 12, 31)])
         let xAxis = d3.svg.axis()
           .scale(xScale)
           .orient('bottom')
         d3.select('#' + this.elIdSvg)
           .append('g')
           .attr('class', style.axis)
-          .attr('transform', 'translate(' + this.padding.left + ',' + (this.height - this.padding.bottom) + ')')
+          .attr('transform', 'translate(' + this.padding.left + ',' + 0 + ')')
           .call(xAxis)
       }
     }

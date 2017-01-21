@@ -39,8 +39,8 @@ export default {
     },
     render () {
       if (this.teamData) {
-        let xScale = d3.scale.ordinal()
-          .domain(d3.range(this.start, this.end + 1))
+        let xScale = d3.scale.time()
+          .domain([new Date(this.start, 1, 1), new Date(this.end - 1, 12, 31)])
           .rangeRoundBands([0, this.width - this.padding.left - this.padding.right])
         let xAxis = d3.svg.axis()
           .scale(xScale)

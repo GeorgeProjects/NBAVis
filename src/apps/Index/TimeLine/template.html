@@ -1,4 +1,6 @@
 <div id="{{ style.TimeLine }}">
+    <button @click="changeTimeWindow">ChangeTimeWindow</button>
+    <button @click="changeHoverPlayer">ChangeHoverPlayer</button>
     <time-axis :team-data="myData" :start="yearStart" :end="yearEnd" :width="divWidth" :height="divHeight">
     </time-axis>
 </div>

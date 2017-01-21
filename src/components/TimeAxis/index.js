@@ -14,11 +14,11 @@ export default {
       style,
       elId: `TimeAxis-${(+new Date())}-${Math.floor(Math.random() * 100 * 1000 * 1000)}`,
       elIdSvg: `TimeAxisSvg-${(+new Date())}-${Math.floor(Math.random() * 100 * 1000 * 1000)}`,
-      margin: {
+      padding: {
         left: 10,
         right: 10,
         top: 10,
-        bottom: 10
+        bottom: 20
       }
     }
   },
@@ -31,33 +31,28 @@ export default {
     }
   },
   computed: {
-    padded () {
-    }
   },
   methods: {
-    render () {
+    showInfo () {
       console.log('===>' + this.width + ' ' + this.height)
-      console.log(style.rect)
-      d3.select('#' + this.elIdSvg)
-        .selectAll('rect')
-        .data([1, 2, 3, 4, 5])
-        .enter()
-        .append('rect')
-        .attr('height', function (d, i) {
-          return d
-        })
-        .attr('width', function (d, i) {
-          return 20
-        })
-        .attr('x', function (d, i) {
-          return 6 * i
-        })
-        .attr('class', function (d, i) {
-          return this.style['rect']
-        })
+      console.log(style['rect'])
+    },
+    render () {
+      if (this.teamData) {
+        let xScale = d3.scale.ordinal()
+          .domain(d3.range(this.start, this.end + 1))
+          .rangeRoundBands([0, this.width - this.padding.left - this.padding.right])
+        let xAxis = d3.svg.axis()
+          .scale(xScale)
+          .orient('bottom')
+        d3.select('#' + this.elIdSvg)
+          .append('g')
+          .attr('class', style.axis)
+          .attr('transform', 'translate(' + this.padding.left + ',' + (this.height - this.padding.bottom) + ')')
+          .call(xAxis)
+      }
     }
   },
   ready () {
-    this.render()
   }
 }

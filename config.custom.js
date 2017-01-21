@@ -39,6 +39,7 @@ var config = {
   // 外部资源
   // 通常用于第三方体积较大的包, 比如jquery
   // 请注意引入的顺序, 尤其是针对有依赖的
+  // 如果CDN是true的话就保证是在网页上跑
   externals: [ {
     package: 'echarts',
     var: 'echarts',

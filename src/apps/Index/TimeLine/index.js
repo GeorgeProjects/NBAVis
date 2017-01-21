@@ -1,5 +1,6 @@
 import style from './style.less'
 import template from './template.html'
+import $ from 'jquery'
 import {getTeamIndex, getHoverPlayer} from '../../../vuex/getters'
 import {timeWindowChange, hoverPlayerChange} from '../../../vuex/actions'
 
@@ -17,7 +18,9 @@ export default{
   },
   data () {
     return {
-      style
+      style,
+      teamRecords: null,
+      teamColor: null
     }
   },
   watch: {
@@ -37,6 +40,19 @@ export default{
     changeHoverPlayer () {
       console.log('Action-TimeLine-ChangeHoverPlayer')
       this.hoverPlayerChange(4)
+    },
+    getTeamInfo () {
+      let teamIndex = 4
+      $.getJSON('/get_each_team_records', { id: teamIndex }, (teamRecords) => {
+        console.log('teamRecords', teamRecords)
+        this.teamRecords = teamRecords
+      })
+    },
+    getTeamColor () {
+      $.getJSON('/get_team_color', (teamColor) => {
+        console.log('teamColor', teamColor)
+        this.teamColor = teamColor
+      })
     }
   }
 }

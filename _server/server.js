@@ -5,21 +5,27 @@ var express = require('express')
 var csv2json = require('csv2json')
 var fs = require('fs')
 var server = express()
+/*
 var aqiBeijingJson = require('./data/aqi-beijing.json')
-
+*/
+/*
 fs.createReadStream('./data/population.csv')
   .pipe(csv2json({
     separator: ','
   }))
   .pipe(fs.createWriteStream('./data/population.json'));
+
 server.get('/api/get_aqi_beijing', function (req, res) {
   res.json(aqiBeijingJson)
 })
+*/
 
+/*
 server.get('/get_population', function (req, res) {
   let populationJson = require('./data/population.json')
   res.json(populationJson)
 })
+*/
 
 // 获取所有球队历年比赛结果, StoryLine视图会请求这个数据
 server.get('/get_all_team_records', function (req, res) {

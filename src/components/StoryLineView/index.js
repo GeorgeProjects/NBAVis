@@ -59,7 +59,7 @@ export default{
         } else bias = sbias
       } else if (sNum === 4) {
         let index = ysquence[sNum].indexOf(team)
-        bias = (index - 2) * sbias * 2 + sbias / 2
+        bias = (index - 2) * sbias * 2 + sbias / 2 + 1
       }
       if (eastOrWest === 'east') {
         let leftNum = year - 1985
@@ -196,6 +196,8 @@ export default{
             matchResultArray[itemCount].match_result.push(locationArray)
           }
           let matchResultArrayAdded = []
+          let lastX = 0
+          let lastY = 0
           for (let i = 0; i < timeLen - 1; i++) {
             let zero = matchResultArray[itemCount].match_result[i]
             let zeroX = zero[0]
@@ -214,7 +216,10 @@ export default{
             matchResultArrayAdded.push([secondX, secondY])
             matchResultArrayAdded.push([thirdX, thirdY])
             matchResultArrayAdded.push([forthX, forthY])
+            lastX = forth[0]
+            lastY = forth[1]
           }
+          matchResultArrayAdded.push([lastX + this.timeWidth, lastY])
           let colorData = this.teamColor
           let style = this.style
           let path = svg.append('path')
@@ -283,7 +288,7 @@ export default{
         for (let i in this.yscale.domain()) {
           svg.append('line')
             .attr('x1', this.margin.left)
-            .attr('x2', this.width - this.margin.right - this.timeWidth)
+            .attr('x2', this.width - this.margin.right)
             .attr('y1', () => {
               return this.yscale(i)
             })

@@ -3,7 +3,7 @@ import template from './template.html'
 import $ from 'jquery'
 import {teamIndexChange} from '../../../vuex/actions'
 import {getTimeWindow} from '../../../vuex/getters'
-
+import storyLineView from '../../../components/StoryLineView'
 export default{
   template,
   vuex: {
@@ -20,6 +20,9 @@ export default{
       allTeamRecords: null,
       teamColor: null
     }
+  },
+  components: {
+    storyLineView
   },
   methods: {
     changeTeamIndex () {
@@ -48,22 +51,8 @@ export default{
   created () {
     this.teamIndexChange(2)
   },
-  components: {
-    StoryLine
-  },
-  watch: {
-  },
-  methods: {
-    getData () {
-      $.getJSON('/api/get_team_compete_info', (data) => {
-        this.teamCompeteInfo = data
-      })
-      $.getJSON('/api/get_team_color', (data) => {
-        this.teamColor = data
-      })
-    }
-  },
   ready () {
-    this.getData()
+    this.getStoryLineData()
+    this.getTeamColor()
   }
 }

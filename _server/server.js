@@ -5,70 +5,55 @@ var express = require('express')
 var csv2json = require('csv2json')
 var fs = require('fs')
 var server = express()
-var aqiBeijingJson = require('./data/aqi-beijing.json')
-
-fs.createReadStream('./data/population.csv')
-  .pipe(csv2json({
-    separator: ','
-  }))
-  .pipe(fs.createWriteStream('./data/population.json'));
-server.get('/api/get_aqi_beijing', function (req, res) {
-  res.json(aqiBeijingJson)
-})
-
-server.get('/get_population', function (req, res) {
-  let populationJson = require('./data/population.json')
-  res.json(populationJson)
-})
 
 // 获取所有球队历年比赛结果, StoryLine视图会请求这个数据
 server.get('/get_all_team_records', function (req, res) {
-  let allTeamRecords = require('./data/AllTeamsRecords.json')
+  let allTeamRecords = require('./data/NBADATA/AllTeamsRecords.json')
   res.json(allTeamRecords)
 })
 
 // 根据球队id获取球队中球员历年来变动情况
 server.get('/get_each_team_records', function (req, res) {
   let teamId = req.query.id
-  let eachTeamRecords = require('./data/EachTeamRecords/' + teamId + '.json')
+  let eachTeamRecords = require('./data/NBADATA/EachTeamRecords/' + teamId + '.json')
   res.json(eachTeamRecords)
 })
 
 // 根据球队id获取球队中球员历年来变动情况
 server.get('/get_team_player_exchange', function (req, res) {
   let teamId = req.query.id
-  let teamPlayerExchange = require('./data/EachTeamPlayerInfo/' + teamId + '.json')
+  let teamPlayerExchange = require('./data/NBADATA/EachTeamPlayerInfo/' + teamId + '.json')
   res.json(teamPlayerExchange)
 })
 
 // 根据球员id获取球员的球队经历, 详细信息, playerIndex, 概括情况
 server.get('/get_player_info', function (req, res) {
   let playerId = req.query.id
-  let playerInfo = require('./data/EachPlayerInfo/' + playerId + '.json')
+  let playerInfo = require('./data/NBADATA/EachPlayerInfo/' + playerId + '.json')
   res.json(playerInfo)
 })
 
 // 获取球队的颜色数据, 所有视图中
 server.get('/get_team_color', function (req, res) {
-  let teamColor = require('./data/TeamColor.json')
+  let teamColor = require('./data/NBADATA/TeamColor.json')
   res.json(teamColor)
 })
 
 // 获取球队名称与球队index的字典,将球队名称转换成球队的index值
 server.get('/get_teamname_index', function (req, res) {
-  let teamName2Index = require('./data/TeamName2Index.json')
+  let teamName2Index = require('./data/NBADATA/TeamName2Index.json')
   res.json(teamName2Index)
 })
 
 // 获取东部赛区历年常规赛的成绩
 server.get('/get_west_regular_records', function (req, res) {
-  let westRegularRecords = require('./data/WestRegularSeason.json')
+  let westRegularRecords = require('./data/NBADATA/WestRegularSeason.json')
   res.json(westRegularRecords)
 })
 
 // 获取西部赛区历年常规赛成绩
 server.get('/get_east_regular_records', function (req, res) {
-  let eastRegularRecords = require('./data/EastRegularSeason.json')
+  let eastRegularRecords = require('./data/NBADATA/EastRegularSeason.json')
   res.json(eastRegularRecords)
 })
 

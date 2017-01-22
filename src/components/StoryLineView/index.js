@@ -65,12 +65,14 @@ export default{
         let leftNum = year - 1985
         left = leftNum * (this.timeWidth + this.timeGapWidth)
         let topNum = +eastTransformObj[best]
+        this.teamYearRankMatrix[team][year] = topNum
         // top = topNum * (this.levelHeight + this.levelGapHeight) + bias
         top = this.yscale(topNum) + bias
       } else if (eastOrWest === 'west') {
         let leftNum = year - 1985
         left = leftNum * (this.timeWidth + this.timeGapWidth)
         let topNum = +westTransformObj[best]
+        this.teamYearRankMatrix[team][year] = topNum
         // top = topNum * (this.levelHeight + this.levelGapHeight) - bias + vbias - vbias
         top = this.yscale(topNum) - bias + vbias - vbias
       }
@@ -79,7 +81,7 @@ export default{
       return locationArray
     },
     adjust (data, start, step) {
-      function exchange (team1, team2, arr) {
+      var exchange = function (team1, team2, arr) {
         let index1 = 100
         let index2 = 100
         for (let i = 0; i < 5; i++) {
@@ -158,6 +160,13 @@ export default{
       if (this.teamCompeteInfo && this.teamColor) {
         // console.log(this.teamCompeteInfo)
         // 必须先判断一下
+        this.colorData = {}
+        for (let team in this.teamColor.teamcolor) {
+          let colorString = this.teamColor.teamcolor[team].replace(' ', '')
+          let colorArray = colorString.split(',')
+          // console.log(colorArray)
+          this.colorData['team' + team] = 'rgb(' + colorArray[0] + ',' + colorArray[1] + ',' + colorArray[2] + ')'
+        }
         let timeLen = 31
         let timeGapLen = 30
         let timeGapRatio = 2
@@ -175,11 +184,13 @@ export default{
         let matchResultArray = []
         let data = this.teamCompeteInfo
         let sequences = this.computeSequences(data.teaminfo)
-        console.log(sequences)
         let itemCount = 0
         let svg = this.svg
+        this.teamYearRankMatrix = {}
+        let colorData = this.colorData
         for (let item in data.teaminfo) {
           matchResultArray[itemCount] = {}
+          this.teamYearRankMatrix[item] = {}
           matchResultArray[itemCount].team_name = item
           matchResultArray[itemCount].match_result = []
           for (let i = 0; i < timeLen; i++) {
@@ -220,37 +231,26 @@ export default{
             lastY = forth[1]
           }
           matchResultArrayAdded.push([lastX + this.timeWidth, lastY])
-          let colorData = this.teamColor
           let style = this.style
           let path = svg.append('path')
             .attr('class', (d, i) => {
               return this.style['team-path']
             })
-            .attr('id', item)
+            .attr('id', 'team' + item)
             .data([matchResultArrayAdded])
             .attr('d', d3.svg.line().interpolate('basis'))
-            .style('stroke', function () {
-              let colorString = colorData.teamcolor[item].replace(' ', '')
-              let colorArray = colorString.split(',')
-              // console.log(colorArray)
-              return 'rgb(' + colorArray[0] + ',' + colorArray[1] + ',' + colorArray[2] + ')'
-            })
+            .style('stroke', this.colorData['team' + item])
             .on('mouseover', function (d, i) {
-              d3.selectAll('.' + style['team-path']).style('opacity', 0.4)
-              d3.select(this).style('opacity', 1)
-              // console.log(d3.select(this).attr('id'))
-              // let state = d3.select(this).attr('class').replace('projection-node-path ', '');
-              // d3.selectAll('.projection-node-path').classed('not-hover', true);
-              // d3.select(this).classed('not-hover', false);
-              // d3.select(this).classed('hover', true);
-              // self.hover_highlightState(state);
+              d3.selectAll('.' + style['team-path']).style('opacity', 0.4).style('stroke', 'grey')
+              d3.select(this).style('opacity', 1).style('stroke', colorData['team' + item])
             })
-            .on('mouseout', function (d, i) {
-              d3.select(this).style('opacity', 0.4)
-              // let state = d3.select(this).attr('class').replace('projection-node-path ', '');
-              // d3.selectAll('.projection-node-path').classed('not-hover', false);
-              // d3.select(this).classed('not-hover', false);
-              // d3.select(this).classed('hover', false);
+            .on('mouseout', (d, i) => {
+              let teams = this.teams
+              for (let team in teams) {
+                svg.select('#team' + teams[team])
+                  .style('stroke', colorData['team' + teams[team]])
+                  .style('opacity', 0.4)
+              }
             })
             .on('click', function (d, i) {
               console.log(d3.select(this).attr('id'))
@@ -278,13 +278,45 @@ export default{
           .orient('right')
         let axisElements = svg.append('g')
           .attr('class', style['axis'])
-          .attr('transform', 'translate(' + (this.width - this.margin.right - this.timeWidth) + ')')
+          .attr('transform', 'translate(' + (this.width - this.margin.right - this.timeWidth + 5) + ')')
           .call(yAxis)
         let texts = ['西部常规赛', '西部八强', '西部四强', '西部决赛', '西部冠军', '总冠军', '东部冠军', '东部决赛', '东部四强', '东部八强', '东部常规赛']
         axisElements.selectAll('text')
           .text((d) => {
             return texts[+d]
           })
+        let yscale = this.yscale
+        let teams = Object.keys(this.teamYearRankMatrix)
+        this.teams = teams
+        let brush = d3.svg.brush()
+          .y(this.yscale)
+          .on('brush', () => {
+            for (let team in teams) {
+              svg.select('#team' + teams[team])
+                .style('stroke', this.colorData['team' + teams[team]])
+                .style('opacity', 0.4)
+            }
+            let minExtent = brush.extent()[0]
+            let maxExtent = brush.extent()[1]
+            let s = 0
+            let e = 0
+            for (let i in d3.range(texts.length - 1)) { // key 检索，默认字符串
+              // console.log('==>', yscale(i), minExtent, yscale(+i + 1), minExtent)
+              if (yscale(i) < minExtent && yscale(+i + 1) > minExtent) {
+                s = +i + 1
+              }
+              if (yscale(i) < maxExtent && yscale(+i + 1) > maxExtent) {
+                e = +i
+              }
+            }
+            this.highLight(1985, 2015, s, e)
+          })
+        axisElements.append('g')
+          .attr('class', style['brush'])
+          .call(brush)
+          .selectAll('rect')
+          .attr('x', this.timeWidth - 2)
+          .attr('width', this.margin.right - 10)
         for (let i in this.yscale.domain()) {
           svg.append('line')
             .attr('x1', this.margin.left)
@@ -297,6 +329,37 @@ export default{
             })
             .style('stroke-dasharray', ('3, 3'))
             .style('stroke', 'grey')
+        }
+      }
+    },
+    highLight (yStart, yEnd, rStart, rEnd) {
+      // d3.selectAll('.' + this.style['team-path']).style('opacity', 0.4).style('stroke', 'grey')
+      let selected = 0
+      for (let team in this.teamYearRankMatrix) {
+        let tag = false
+        for (let y = +yStart; y <= +yEnd; y++) {
+          if (this.teamYearRankMatrix[team][y] >= rStart && this.teamYearRankMatrix[team][y] <= rEnd) {
+            tag = true
+            break
+          }
+        }
+        if (tag) {
+          this.svg.select('#team' + team)
+            .style('opacity', 1)
+          selected = selected + 1
+        } else {
+          // console.log(team)
+          this.svg.select('#team' + team)
+            .style('stroke', 'grey')
+            .style('opacity', 0.4)
+        }
+      }
+      if (selected === 0) {
+        let teams = this.teams
+        for (let team in teams) {
+          this.svg.select('#team' + teams[team])
+            .style('stroke', this.colorData['team' + teams[team]])
+            .style('opacity', 0.4)
         }
       }
     }

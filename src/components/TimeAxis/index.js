@@ -94,7 +94,6 @@ export default {
         let svg = d3.select('#' + this.elIdSvg)
         let startYear = this.timeWindowLeft
         let endYear = this.timeWindowRight
-        let xx = this.padding.top
         let x = d3.scale.ordinal().rangeRoundBands([ 0, this.width - this.padding.left - this.padding.right ])
         x.domain(d3.range(startYear, endYear + 1))
         svg.selectAll('.rectInfo-timeLine').remove()
@@ -108,7 +107,7 @@ export default {
             return x(d)
           })
           .attr('y', function (d) {
-            return xx
+            return 0
           })
           .attr('height', function (d) {
             return 58

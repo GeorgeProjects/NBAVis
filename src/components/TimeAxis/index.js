@@ -9,7 +9,7 @@ import mvp from '../../../assets/images/mvp.png'
 
 export default {
   template,
-  props: [ 'width', 'height', 'teamData' ],
+  props: [ 'width', 'height', 'teamData', 'tColor'],
   data () {
     return {
       style,
@@ -29,6 +29,9 @@ export default {
   watch: {
     teamData () {
       this.drawTeamInfo()
+    },
+    tColor () {
+      this.init()
     },
     width () {
       this.drawTimeLine()
@@ -167,6 +170,14 @@ export default {
             d3.select(this).attr('width', 40).attr('height', 40)
           })
       }
+    },
+    init () {
+      // console.log('初始化' + this.tColor.teamcolor)
+      // for (var team in this.tColor.teamcolor) {
+      //   console.log(this.tColor.teamcolor[team])
+      //   let arr = this.tColor.teamcolor[team].split(',')
+      //   console.log('====' + arr[0])
+      // }
     }
   },
   ready () {

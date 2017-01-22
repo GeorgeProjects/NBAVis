@@ -22,6 +22,7 @@ export default{
       style,
       teamRecords: null,
       teamColor: null,
+      teamIndex: null,
       divWidth: 0,
       divHeight: 0
     }
@@ -33,6 +34,9 @@ export default{
     getTeamIndex () {
       //  可以获取teamIndex的数值,在这个地方调用渲染函数
       console.log('Watch-TimeLine-TeamIndex=>', this.getTeamIndex)
+      this.teamColor = this.getTeamIndex[ 'teamColor' ]
+      this.teamIndex = this.getTeamIndex[ 'teamIndex' ]
+      this.getTeamInfo(this.teamIndex)
     },
     getHoverPlayer () {
       console.log('Watch-TimeLine-HoverPlayers=>', this.getHoverPlayer)
@@ -57,17 +61,18 @@ export default{
       console.log('Action-TimeLine-ChangeHoverPlayer')
       this.hoverPlayerChange(id)
     },
-    getTeamInfo () {
-      let teamIndex = 4
+    getTeamInfo (teamIndex) {
       $.getJSON('/get_each_team_records', { id: teamIndex }, (teamRecords) => {
         console.log('teamRecords', teamRecords)
         this.teamRecords = teamRecords
+        console.log(this.teamRecords)
       })
     },
     getTeamColor () {
       $.getJSON('/get_team_color', (teamColor) => {
-        console.log('teamColor', teamColor)
+        console.log('teamColor-timeline', teamColor.teamcolor)
         this.teamColor = teamColor
+        console.log(this.teamColor)
       })
     },
     getSize () {
@@ -75,6 +80,9 @@ export default{
       this.divHeight = $('#' + style.TimeLine).height()
       console.log(this.divHeight + ',' + this.divWidth)
     }
+  },
+  created () {
+    this.getTeamColor()
   },
   ready () {
     this.getSize()

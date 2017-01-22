@@ -10,8 +10,8 @@ export const timeWindowChange = function (store, startTime, endTime) {
   console.log('action-timewindow-change')
   store.dispatch(types.TIMEWINDOW_CHANGE, startTime, endTime)
 }
-export const teamIndexChange = function (store, teamIndex) {
-  store.dispatch(types.TEAM_CHANGE, teamIndex)
+export const teamIndexChange = function (store, teamIndex, teamColor) {
+  store.dispatch(types.TEAM_CHANGE, teamIndex, teamColor)
 }
 export const selectedPlayerChange = function (store, playerIndex) {
   console.log('action-selectplayerchange')

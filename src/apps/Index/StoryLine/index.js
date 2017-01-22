@@ -4,8 +4,16 @@ import $ from 'jquery'
 import {teamIndexChange} from '../../../vuex/actions'
 import {getTimeWindow} from '../../../vuex/getters'
 import storyLineView from '../../../components/StoryLineView'
+import storage from '../../../commons/storage'
+
 export default{
   template,
+  props: {
+    token: {
+      type: String,
+      default: ''
+    }
+  },
   vuex: {
     actions: {
       teamIndexChange
@@ -54,5 +62,6 @@ export default{
   ready () {
     this.getStoryLineData()
     this.getTeamColor()
+    this.LOGS.log('SL.token', this.token, storage.get(this.token, true))
   }
 }

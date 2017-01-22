@@ -108,7 +108,7 @@ export default {
         // 计算总冠军的年份，MVP成员id(push的时候[year, id])
         let yearChampion = []
         for (var year in this.teamData.teaminfo) {
-          if (this.teamData.teaminfo[year].best === 1) {
+          if (this.teamData.teaminfo[year].best === 0) {
             yearChampion.push([ parseInt(year), 2 ])  // 2-->this.teamData.teaminfo[year].mvp
           }
         }

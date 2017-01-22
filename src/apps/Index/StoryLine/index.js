@@ -1,31 +1,50 @@
 import style from './style.less'
 import template from './template.html'
-import StoryLine from '../../../components/StoryLineView'
 import $ from 'jquery'
+import {teamIndexChange} from '../../../vuex/actions'
+import {getTimeWindow} from '../../../vuex/getters'
+import storyLineView from '../../../components/StoryLineView'
+
 export default{
   template,
   data () {
     return {
       style,
-      teamCompeteInfo: null,
+      allTeamRecords: null,
       teamColor: null,
       elId: `storyline-${(+new Date())}-${Math.random() * 100 * 1000 * 1000}`
     }
   },
   components: {
-    StoryLine
-  },
-  watch: {
+    storyLineView
   },
   methods: {
-    getData () {
-      $.getJSON('/api/get_team_compete_info', (data) => {
-        this.teamCompeteInfo = data
+    changeTeamIndex () {
+      console.log('Action-StoryLineView-changeTeamIndex', 3)
+      this.teamIndexChange(3)
+    },
+    getStoryLineData () {
+      $.getJSON('/get_all_team_records', (allTeamRecords) => {
+        console.log('allTeamRecords', allTeamRecords)
+        this.allTeamRecords = allTeamRecords
       })
-      $.getJSON('/api/get_team_color', (data) => {
-        this.teamColor = data
+    },
+    getTeamColor () {
+      $.getJSON('/get_team_color', (teamColor) => {
+        console.log('teamColor', teamColor)
+        this.teamColor = teamColor
       })
+      
     }
+  },
+  watch: {
+    getTimeWindow () {
+      //  可以获取teamIndex的数值,在这个地方调用渲染函数
+      console.log('Watch-StoryLineView-TimeWindow=>', this.getTimeWindow)
+    }
+  },
+  created () {
+    this.teamIndexChange(2)
   },
   ready () {
     this.getData()

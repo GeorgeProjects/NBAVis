@@ -1,1 +1,6 @@
-<story-line :team-compete-info="teamCompeteInfo" :team-color="teamColor"></story-line>
+<div>
+    <button v-on:click="changeTeamIndex">ChangeTeam</button>
+    <button v-on:click="getStoryLineData">getStoryLineData</button>
+    <button v-on:click="getTeamColor">getTeamColor</button>
+    <stroy-line-view :team-compete-info="allTeamRecords" :team-color="teamColor"></stroy-line-view>
+</div>

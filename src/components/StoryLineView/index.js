@@ -1,8 +1,20 @@
 import style from './style.less'
 import template from './template.html'
+import {teamIndexChange} from '../../vuex/actions'
+import {getTimeWindow, getSelectedPlayer} from '../../vuex/getters'
 import d3 from 'd3'
+import $ from 'jquery'
 export default{
   template,
+  vuex: {
+    actions: {
+      teamIndexChange
+    },
+    getters: {
+      getTimeWindow,
+      getSelectedPlayer
+    }
+  },
   props: ['teamCompeteInfo', 'teamColor'],
   data () {
     return {
@@ -12,17 +24,107 @@ export default{
   },
   watch: {
     teamCompeteInfo () {
-      this.render()
+      this.render(this.getTimeWindow)
+    },
+    getTimeWindow () {
+      this.setTimeWindow(this.getTimeWindow)
+    },
+    getSelectedPlayer () {
+      this.selectedPlayerResponse(this.getSelectedPlayer)
+    },
+    getHoverPlayer () {
+      console.log('=>storyLine', this.getHoverPlayer)
+      this.selectedPlayerResponse(this.getHoverPlayer)
     }
   },
   methods: {
+    selectedPlayerResponse (selectedPlayer) {
+      $.getJSON('/get_player_info', {id: selectedPlayer}, (playerInfo) => {
+        // console.log('playerInfo', selectedPlayer)
+        this.svg.selectAll('.' + this.style['player-path']).remove()
+        let yearlyData = playerInfo.data
+        let pureData = []
+        for (let i in yearlyData) {
+          let year = +yearlyData[i]['赛季'].split('-')[0]
+          let yearstr = ''
+          if (year < 10) {
+            yearstr = '200' + year
+          } else if (year >= 10 && year < 16) {
+            yearstr = '20' + year
+          } else {
+            yearstr = '19' + year
+          }
+          pureData.push({'year': +yearstr, 'team': yearlyData[i]['球队']})
+        }
+        pureData.sort((a, b) => {
+          return a['year'] - b['year']
+        })
+        // console.log('==>player', pureData)
+        let teamPathPoints = this.teamPathPoints
+        let teams = Object.keys(teamPathPoints)
+        this.svg.selectAll('.' + this.style['team-path']).style('stroke', 'grey').style('opacity', 0.4)
+        let teamColor = this.teamColor
+        let pointsArray = []
+        let beforeTeam = ''
+        for (let i in pureData) {
+          if (pureData[i]['year'] < this.yStart || pureData[i]['year'] > this.yEnd) {
+            continue
+          }
+          let team = ''
+          for (let j in teams) {
+            if (pureData[i]['team'].indexOf(teams[j]) >= 0) {
+              team = teams[j]
+              break
+            }
+          }
+          if (team === '') continue
+          if (team !== beforeTeam) {
+            beforeTeam = team
+            this.svg.append('path')
+              .attr('class', (d, i) => {
+                return this.style['player-path']
+              })
+              .data([pointsArray])
+              .attr('d', d3.svg.line().interpolate('basis'))
+              .style('stroke', teamColor['team' + team])
+            pointsArray = []
+            pointsArray.push(teamPathPoints[team][(pureData[i]['year'] - this.yStart) * 4])
+            pointsArray.push(teamPathPoints[team][(pureData[i]['year'] - this.yStart) * 4 + 1])
+          } else {
+            pointsArray.push(teamPathPoints[team][(pureData[i]['year'] - this.yStart) * 4 - 2])
+            pointsArray.push(teamPathPoints[team][(pureData[i]['year'] - this.yStart) * 4 - 1])
+            pointsArray.push(teamPathPoints[team][(pureData[i]['year'] - this.yStart) * 4])
+            pointsArray.push(teamPathPoints[team][(pureData[i]['year'] - this.yStart) * 4 + 1])
+          }
+        }
+        if (beforeTeam !== '') {
+          this.svg.append('path')
+            .attr('class', (d, i) => {
+              return this.style['player-path']
+            })
+            .data([pointsArray])
+            .attr('d', d3.svg.line().interpolate('basis'))
+            .style('stroke', teamColor['team' + beforeTeam])
+        }
+      })
+    },
+    setTimeWindow (timeWindow) {
+      this.timeWindow = timeWindow
+      this.yStart = this.timeWindow.start
+      this.yEnd = this.timeWindow.end
+      // console.log('timewindow=>', timeWindow.start, timeWindow.end)
+      this.render()
+    },
+    changeTeamIndex (team) {
+      this.teamIndexChange(team)
+    },
     init () {
       this.width = this.$el.clientWidth
       this.height = this.$el.clientHeight
       this.svg = d3.select('#story-line-svg')
         .attr('width', this.width)
         .attr('height', this.height)
-      this.margin = {left: 10, right: 75, top: 10, bottom: 10}
+      this.margin = {left: 10, right: 80, top: 10, bottom: 10}
       this.yscale = d3.scale.ordinal()
         .domain(d3.range(11))
         .rangePoints([0, this.height], 0.6) // 空白处所占的比例
@@ -62,14 +164,14 @@ export default{
         bias = (index - 2) * sbias * 2 + sbias / 2 + 1
       }
       if (eastOrWest === 'east') {
-        let leftNum = year - 1985
+        let leftNum = year - this.yStart
         left = leftNum * (this.timeWidth + this.timeGapWidth)
         let topNum = +eastTransformObj[best]
         this.teamYearRankMatrix[team][year] = topNum
         // top = topNum * (this.levelHeight + this.levelGapHeight) + bias
         top = this.yscale(topNum) + bias
       } else if (eastOrWest === 'west') {
-        let leftNum = year - 1985
+        let leftNum = year - this.yStart
         left = leftNum * (this.timeWidth + this.timeGapWidth)
         let topNum = +westTransformObj[best]
         this.teamYearRankMatrix[team][year] = topNum
@@ -100,10 +202,10 @@ export default{
       }
       let year = start
       while (1) {
-        if (step < 0 && year <= 1985) {
+        if (step < 0 && year <= this.yStart) {
           break
         }
-        if (step > 0 && year >= 2015) {
+        if (step > 0 && year >= this.yEnd) {
           break
         }
         let arr1 = data[year]
@@ -129,7 +231,7 @@ export default{
       let yearIndexTeam = {} // [ west ]: year: [0]-冠军, [1]-地区冠军, [2]-决赛, [3]-四强, [4]-八强
       yearIndexTeam['west'] = {}
       yearIndexTeam['east'] = {}
-      for (let year = 1985; year <= 2015; year++) {
+      for (let year = this.yStart; year <= this.yEnd; year++) {
         yearIndexTeam['west'][year] = {}
         yearIndexTeam['east'][year] = {}
         for (let i = 0; i < 5; i++) {
@@ -140,7 +242,7 @@ export default{
       let project = {'0': 0, '1': 1, '2': 2, '4': 3, '8': 4}
       // console.log(data)
       for (let team in data) {
-        for (let year in data[team]) {
+        for (let year = this.start; year <= this.end; year++) {
           // console.log(data[team][year].best)
           let best = project[data[team][year].best]
           let loc = data[team][year].loc
@@ -150,16 +252,19 @@ export default{
         }
       }
       // 顺序调整，两个方向1985-2015， 2015-1985
-      this.adjust(yearIndexTeam['west'], 1985, 1)
-      this.adjust(yearIndexTeam['west'], 2015, -1)
-      this.adjust(yearIndexTeam['east'], 1985, 1)
-      this.adjust(yearIndexTeam['east'], 2015, -1)
+      this.adjust(yearIndexTeam['west'], this.yStart, 1)
+      this.adjust(yearIndexTeam['west'], this.yEnd, -1)
+      this.adjust(yearIndexTeam['east'], this.yStart, 1)
+      this.adjust(yearIndexTeam['east'], this.yEnd, -1)
       return yearIndexTeam
     },
     render () {
       if (this.teamCompeteInfo && this.teamColor) {
         // console.log(this.teamCompeteInfo)
         // 必须先判断一下
+        this.svg.selectAll('*').remove()
+        let yStart = this.yStart
+        let yEnd = this.yEnd
         this.colorData = {}
         for (let team in this.teamColor.teamcolor) {
           let colorString = this.teamColor.teamcolor[team].replace(' ', '')
@@ -167,8 +272,8 @@ export default{
           // console.log(colorArray)
           this.colorData['team' + team] = 'rgb(' + colorArray[0] + ',' + colorArray[1] + ',' + colorArray[2] + ')'
         }
-        let timeLen = 31
-        let timeGapLen = 30
+        let timeLen = yEnd - yStart + 1
+        let timeGapLen = yEnd - yStart
         let timeGapRatio = 2
         let viewWidth = this.width - this.margin.left - this.margin.right
         this.timeWidth = viewWidth / (timeLen + timeGapRatio * timeGapLen)  //  每个宽度
@@ -188,13 +293,15 @@ export default{
         let svg = this.svg
         this.teamYearRankMatrix = {}
         let colorData = this.colorData
+        this.teamPathPoints = {}
         for (let item in data.teaminfo) {
           matchResultArray[itemCount] = {}
+          this.teamPathPoints[item] = []
           this.teamYearRankMatrix[item] = {}
           matchResultArray[itemCount].team_name = item
           matchResultArray[itemCount].match_result = []
           for (let i = 0; i < timeLen; i++) {
-            let year = 1985 + i
+            let year = yStart + i
             let attrNameArrray = Object.keys(data.teaminfo[item])
             let loc = data.teaminfo[item][attrNameArrray[0]].loc
             let best = 0
@@ -226,12 +333,20 @@ export default{
             matchResultArrayAdded.push([firstX, firstY])
             matchResultArrayAdded.push([secondX, secondY])
             matchResultArrayAdded.push([thirdX, thirdY])
-            matchResultArrayAdded.push([forthX, forthY])
+            // matchResultArrayAdded.push([forthX, forthY])
+            this.teamPathPoints[item].push([zeroX, zeroY])
+            this.teamPathPoints[item].push([firstX, firstY])
+            this.teamPathPoints[item].push([secondX, secondY])
+            this.teamPathPoints[item].push([thirdX, thirdY])
             lastX = forth[0]
             lastY = forth[1]
           }
+          matchResultArrayAdded.push([lastX, lastY])
           matchResultArrayAdded.push([lastX + this.timeWidth, lastY])
+          this.teamPathPoints[item].push([lastX, lastY])
+          this.teamPathPoints[item].push([lastX + this.timeWidth, lastY])
           let style = this.style
+          let self = this
           let path = svg.append('path')
             .attr('class', (d, i) => {
               return this.style['team-path']
@@ -253,7 +368,9 @@ export default{
               }
             })
             .on('click', function (d, i) {
-              console.log(d3.select(this).attr('id'))
+              d3.selectAll('.' + style['team-path']).style('opacity', 0.4).style('stroke', 'grey')
+              d3.select(this).style('opacity', 1).style('stroke', colorData['team' + item])
+              self.changeTeamIndex(teams.indexOf(d3.select(this).attr('id').split('team')[1]))
             })
           let totalLength = path.node().getTotalLength()
           path
@@ -278,7 +395,7 @@ export default{
           .orient('right')
         let axisElements = svg.append('g')
           .attr('class', style['axis'])
-          .attr('transform', 'translate(' + (this.width - this.margin.right - this.timeWidth + 5) + ')')
+          .attr('transform', 'translate(' + (this.width - this.margin.right) + ')')
           .call(yAxis)
         let texts = ['西部常规赛', '西部八强', '西部四强', '西部决赛', '西部冠军', '总冠军', '东部冠军', '东部决赛', '东部四强', '东部八强', '东部常规赛']
         axisElements.selectAll('text')
@@ -309,13 +426,13 @@ export default{
                 e = +i
               }
             }
-            this.highLight(1985, 2015, s, e)
+            this.highLight(this.yStart, this.yEnd, s, e)
           })
         axisElements.append('g')
           .attr('class', style['brush'])
           .call(brush)
           .selectAll('rect')
-          .attr('x', this.timeWidth - 2)
+          .attr('x', 2)
           .attr('width', this.margin.right - 10)
         for (let i in this.yscale.domain()) {
           svg.append('line')
@@ -365,6 +482,8 @@ export default{
     }
   },
   ready () {
+    this.yStart = 1985
+    this.yEnd = 2015
     this.init()
     this.render()
   }

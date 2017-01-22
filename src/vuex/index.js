@@ -38,14 +38,14 @@ const mutations = {
     state.hoverPlayerIndex = hoverPlayerIndex
   },
   [types.TIMEWINDOW_CHANGE] (state, start, end) {
-    state.timeWindow = { start, end }
+    state.timeWindow = {'start': start, 'end': end}
   },
   [types.SELECTED_PLAYER_CHANGE] (state, playerIndex) {
     console.log('playerIndex', playerIndex)
     var newSelectPlayers = []
     var oldSelectPlayers = state.selectedPlayerIndex
     for (let i = 0; i < oldSelectPlayers.length; i++) {
-      newSelectPlayers.push(oldSelectPlayers[ i ])
+      newSelectPlayers.push(oldSelectPlayers[i])
     }
     if (newSelectPlayers.indexOf(playerIndex) === -1) {
       newSelectPlayers.push(playerIndex)

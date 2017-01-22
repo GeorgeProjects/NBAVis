@@ -35,7 +35,7 @@ export default{
   methods: {
     changeTimeWindow () {
       console.log('Action-TimeLine-ChangeTimeWindow')
-      this.timeWindowChange(5, 8)
+      this.timeWindowChange(2006, 2010)
     },
     changeHoverPlayer () {
       console.log('Action-TimeLine-ChangeHoverPlayer')

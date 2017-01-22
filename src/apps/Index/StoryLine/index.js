@@ -11,7 +11,7 @@ export default{
       teamIndexChange
     },
     getters: {
-      getTimeWindow
+      getTimeWindow,
     }
   },
   data () {

@@ -1,5 +1,6 @@
 import style from './style.less'
 import template from './template.html'
+import $ from 'jquery'
 import {getTeamIndex, getTimeWindow, getSelectedPlayer, getHoverPlayer} from '../../../vuex/getters'
 import {selectedPlayerChange, hoverPlayerChange} from '../../../vuex/actions'
 
@@ -46,6 +47,12 @@ export default{
     changeHoverPlayer () {
       console.log('Action-TeamInfo-changeHoverPlayer')
       this.hoverPlayerChange(3)
+    },
+    getTeamPlayerExchange () {
+      var teamId = 4
+      $.getJSON('/get_team_player_exchange', {id: teamId}, (teamPlayerExchange) => {
+        console.log('teamPlayerExchange', teamPlayerExchange)
+      })
     }
   }
 }

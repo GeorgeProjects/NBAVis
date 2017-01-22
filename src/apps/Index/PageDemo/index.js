@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     getLineChartViewData () {
-      $.getJSON('/api/get_aqi_beijing', (data) => {
+      $.getJSON('/api/get_aqi_beijing', {id: 4}, (data) => {
         this.lineChartOption = {
           title: {
             text: 'Beijing AQI'

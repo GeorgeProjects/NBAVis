@@ -1,8 +1,9 @@
 import style from './style.less'
 import template from './template.html'
-import $ from 'jquery'
 import {getTeamIndex, getHoverPlayer} from '../../../vuex/getters'
 import {timeWindowChange, hoverPlayerChange} from '../../../vuex/actions'
+import TimeAxis from '../../../components/TimeAxis'
+import $ from 'jquery'
 
 export default{
   template,
@@ -20,8 +21,13 @@ export default{
     return {
       style,
       teamRecords: null,
-      teamColor: null
+      teamColor: null,
+      divWidth: 0,
+      divHeight: 0,
     }
+  },
+  components: {
+    TimeAxis
   },
   watch: {
     getTeamIndex () {
@@ -32,10 +38,16 @@ export default{
       console.log('Watch-TimeLine-HoverPlayers=>', this.getHoverPlayer)
     }
   },
+  events: {
+    'time-window': function (msg1, msg2) {
+      console.log('收到子组件的消息' + msg1 + ',' + msg2)
+      // this.changeTimeWindow(msg1, msg2)
+    }
+  },
   methods: {
-    changeTimeWindow () {
+    changeTimeWindow (ll, rr) {
       console.log('Action-TimeLine-ChangeTimeWindow')
-      this.timeWindowChange(5, 8)
+      this.timeWindowChange(ll, rr)
     },
     changeHoverPlayer () {
       console.log('Action-TimeLine-ChangeHoverPlayer')
@@ -53,6 +65,15 @@ export default{
         console.log('teamColor', teamColor)
         this.teamColor = teamColor
       })
+    },
+    getSize () {
+
+      this.divWidth = $('#' + style.TimeLine).width()
+      this.divHeight = $('#' + style.TimeLine).height()
+      console.log(this.divHeight + ',' + this.divWidth)
     }
+  },
+  ready () {
+    this.getSize()
   }
 }

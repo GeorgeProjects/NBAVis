@@ -1,5 +1,8 @@
-<div>
-    <button v-on:click="changeTimeWindow">ChangeTimeWindow</button>
+<!--  <button v-on:click="changeTimeWindow">ChangeTimeWindow</button>
     <button v-on:click="changeHoverPlayer">ChangeHoverPlayer</button>
-    <button v-on:click="getTeamInfo">getTeamInfo</button>
+     -->
+<button v-on:click="getTeamInfo">getTeamInfo</button>
+<div id="{{ style.TimeLine }}">
+    <time-axis :team-data="teamRecords" :width="divWidth" :height="divHeight">
+    </time-axis>
 </div>

@@ -47,5 +47,23 @@ export default{
   },
   created () {
     this.teamIndexChange(2)
+  },
+  components: {
+    StoryLine
+  },
+  watch: {
+  },
+  methods: {
+    getData () {
+      $.getJSON('/api/get_team_compete_info', (data) => {
+        this.teamCompeteInfo = data
+      })
+      $.getJSON('/api/get_team_color', (data) => {
+        this.teamColor = data
+      })
+    }
+  },
+  ready () {
+    this.getData()
   }
 }

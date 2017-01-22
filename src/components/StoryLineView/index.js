@@ -115,8 +115,8 @@ export default{
       // console.log('timewindow=>', timeWindow.start, timeWindow.end)
       this.render()
     },
-    changeTeamIndex (team) {
-      this.teamIndexChange(team)
+    changeTeamIndex (team, color) {
+      this.teamIndexChange(team, color)
     },
     init () {
       this.width = this.$el.clientWidth
@@ -370,7 +370,8 @@ export default{
             .on('click', function (d, i) {
               d3.selectAll('.' + style['team-path']).style('opacity', 0.4).style('stroke', 'grey')
               d3.select(this).style('opacity', 1).style('stroke', colorData['team' + item])
-              self.changeTeamIndex(teams.indexOf(d3.select(this).attr('id').split('team')[1]))
+              let teamId = d3.select(this).attr('id')
+              self.changeTeamIndex(teams.indexOf(teamId.split('team')[1]), self.colorData[teamId])
             })
           let totalLength = path.node().getTotalLength()
           path

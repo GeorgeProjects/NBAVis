@@ -8,5 +8,28 @@ export const activeUri = (state) => {
   }
   return ''
 }
-
+export const getTimeWindow = (state) => {
+  if (state.timeWindow) {
+    return state.timeWindow
+  }
+  return null
+}
+export const getTeamIndex = (state) => {
+  if (state.teamIndex) {
+    return state.teamIndex
+  }
+  return null
+}
+export const getSelectedPlayer = (state) => {
+  if (state.selectedPlayerIndex) {
+    return state.selectedPlayerIndex
+  }
+  return null
+}
+export const getHoverPlayer = (state) => {
+  if (state.hoverPlayerIndex) {
+    return state.hoverPlayerIndex
+  }
+  return null
+}
 export const activeRouter = state => state.activeRouter

@@ -14,6 +14,8 @@ import PlayerInfo from './PlayerInfo'
 // import routers from './routers'
 import {activeRouter} from '../../vuex/getters'
 
+import storage from '../../commons/storage'
+
 export default {
   template,
   vuex: {
@@ -23,10 +25,18 @@ export default {
   },
   data () {
     return {
-      style
+      style,
+      token: ''
     }
   },
   components: {
     AppHeader, StoryLine, PlayerChangements, TimeLine, TeamInfo, PlayerInfo
+  },
+  created () {
+    this.LOGS.log('My Name1', 123, 456, 788, { a: 123 })
+    this.token = storage.set([ { a: 'Big Data' } ])
+  },
+  ready () {
+    this.LOGS.info('My Name2', [ 1, 2, 3, 4 ], { a: 123 })
   }
 }

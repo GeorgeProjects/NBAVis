@@ -3,20 +3,23 @@ import template from './template.html'
 import $ from 'jquery'
 import {teamIndexChange} from '../../../vuex/actions'
 import {getTimeWindow} from '../../../vuex/getters'
-import storyLineView from '../../../components/StoryLineView'
 
 export default{
   template,
+  vuex: {
+    actions: {
+      teamIndexChange
+    },
+    getters: {
+      getTimeWindow
+    }
+  },
   data () {
     return {
       style,
       allTeamRecords: null,
-      teamColor: null,
-      elId: `storyline-${(+new Date())}-${Math.random() * 100 * 1000 * 1000}`
+      teamColor: null
     }
-  },
-  components: {
-    storyLineView
   },
   methods: {
     changeTeamIndex () {
@@ -34,7 +37,6 @@ export default{
         console.log('teamColor', teamColor)
         this.teamColor = teamColor
       })
-      
     }
   },
   watch: {
@@ -45,6 +47,21 @@ export default{
   },
   created () {
     this.teamIndexChange(2)
+  },
+  components: {
+    StoryLine
+  },
+  watch: {
+  },
+  methods: {
+    getData () {
+      $.getJSON('/api/get_team_compete_info', (data) => {
+        this.teamCompeteInfo = data
+      })
+      $.getJSON('/api/get_team_color', (data) => {
+        this.teamColor = data
+      })
+    }
   },
   ready () {
     this.getData()

@@ -13,6 +13,13 @@ Vue.prototype.VuexMutations = types
 const state = {
   ctx: null,
   activeRouter: null,
+  timeWindow: {
+    start: 0,
+    end: 0
+  },
+  hoverPlayerIndex: 0,
+  teamIndex: 5,
+  selectedPlayerIndex: [],
   status: {
     url: null
   }
@@ -23,6 +30,31 @@ const mutations = {
     state.ctx = ctx
     state.activeRouter = router
     utils.setStatus(state, 'url', types.URL_CHANGE)
+  },
+  [types.TEAM_CHANGE] (state, teamIndex) {
+    state.teamIndex = teamIndex
+  },
+  [types.HOVER_PLAYER_CHANGE] (state, hoverPlayerIndex) {
+    state.hoverPlayerIndex = hoverPlayerIndex
+  },
+  [types.TIMEWINDOW_CHANGE] (state, start, end) {
+    state.timeWindow = { start, end }
+  },
+  [types.SELECTED_PLAYER_CHANGE] (state, playerIndex) {
+    console.log('playerIndex', playerIndex)
+    var newSelectPlayers = []
+    var oldSelectPlayers = state.selectedPlayerIndex
+    for (let i = 0; i < oldSelectPlayers.length; i++) {
+      newSelectPlayers.push(oldSelectPlayers[ i ])
+    }
+    if (newSelectPlayers.indexOf(playerIndex) === -1) {
+      newSelectPlayers.push(playerIndex)
+    } else {
+      let thisIndex = newSelectPlayers.indexOf(playerIndex)
+      newSelectPlayers.splice(thisIndex, 1)
+    }
+    console.log('newSelectPlayers', newSelectPlayers)
+    state.selectedPlayerIndex = newSelectPlayers
   }
 }
 

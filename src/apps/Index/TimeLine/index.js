@@ -20,8 +20,6 @@ export default{
   data () {
     return {
       style,
-      yearStart: 1985,
-      yearEnd: 2015,
       divWidth: 0,
       divHeight: 0,
       myData: {
@@ -231,10 +229,16 @@ export default{
       console.log('Watch-TimeLine-HoverPlayers=>', this.getHoverPlayer)
     }
   },
+  events: {
+    'time-window': function (msg1, msg2) {
+      console.log('收到子组件的消息' + msg1 + ',' + msg2)
+      // this.changeTimeWindow(msg1, msg2)
+    }
+  },
   methods: {
-    changeTimeWindow () {
+    changeTimeWindow (ll, rr) {
       console.log('Action-TimeLine-ChangeTimeWindow')
-      this.timeWindowChange(5, 8)
+      this.timeWindowChange(ll, rr)
     },
     changeHoverPlayer () {
       console.log('Action-TimeLine-ChangeHoverPlayer')
@@ -242,7 +246,7 @@ export default{
     },
     getSize () {
      // console.log('========>>>height ' + $('#' + style.TimeLine).height() + 'width ' + $('#' + style.TimeLine).width())
-      this.divWidth = $('#' + style.TimeLine).width() - 50
+      this.divWidth = $('#' + style.TimeLine).width()
       this.divHeight = $('#' + style.TimeLine).height()
     }
   },

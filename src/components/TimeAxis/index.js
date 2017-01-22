@@ -4,113 +4,146 @@
 import style from './style.less'
 import template from './template.html'
 import d3 from 'd3'
-import $ from 'jquery'
+// import $ from 'jquery'
 
 export default {
   template,
-  props: [ 'width', 'height', 'start', 'end', 'teamData' ],
+  props: [ 'width', 'height', 'teamData' ],
   data () {
     return {
       style,
       elId: `TimeAxis-${(+new Date())}-${Math.floor(Math.random() * 100 * 1000 * 1000)}`,
       elIdSvg: `TimeAxisSvg-${(+new Date())}-${Math.floor(Math.random() * 100 * 1000 * 1000)}`,
       padding: {
-        left: 50,
-        right: 50,
-        top: 10,
+        left: 0,
+        right: 0,
+        top: 0,
         bottom: 20
       },
-      timeWindowLeft: null,
-      timeWindowRight: null
+      timeWindowLeft: 1985,
+      timeWindowRight: 2015
     }
   },
   watch: {
     teamData () {
-      // this.render()
+
     },
     width () {
-      this.init()
       this.drawTimeLine()
-      this.drawTeamInfo()
+      this.drawTeamInfo ()
     },
     timeWindowLeft () {
       console.log(this.timeWindowLeft + ',' + this.timeWindowRight)
-
+      this.$dispatch('time-window', this.timeWindowLeft, this.timeWindowRight)
+      console.log('=======>')
+    },
+    timeWindowRight () {
+      console.log(this.timeWindowLeft + ',' + this.timeWindowRight)
+      this.$dispatch('time-window', this.timeWindowLeft, this.timeWindowRight)
+      console.log('=======>')
     }
   },
   methods: {
-    init () {
-      this.timeWindowLLLeft = this.start
-      this.timeWindowRRRight = this.end
-    },
     drawTimeLine () {
-      if (this.teamData) {
-        let thisTemp = this // js中的对象类型为引用类型
-        let startYear = this.start
-        let endYear = this.end
-        let xScale = d3.time.scale().range([ 0, this.width - this.padding.left - this.padding.right ])
-          .domain([ new Date(startYear - 1, 1, 1), new Date(endYear, 12, 31) ])
-        let svg = d3.select('#' + this.elIdSvg)
-        svg.append('g')
-          .attr('class', style.axis)
-          .attr('transform', 'translate(' + this.padding.left + ',' + (this.height - this.padding.bottom) + ')')
-          .call(d3.svg.axis()
-            .scale(xScale)
-            .orient('bottom')
-            .ticks(d3.time.years, 1)
-            .tickFormat(function () {return null}))
-          .selectAll('.tick')
-          .classed(style[ 'tick--minor' ], function (d) {return d.getHours()})
-        svg.append('g')
-          .attr('class', style.axis)
-          .attr('transform', 'translate(' + this.padding.left + ',' + (this.height - this.padding.bottom) + ')')
-          .call(d3.svg.axis()
-            .scale(xScale)
-            .orient('bottom')
-            .ticks(d3.time.years, 1)
-            .tickPadding(0))
-          .attr('text-anchor', null)
-          .selectAll('text')
-          .attr('x', 19)
-        let brush = d3.svg.brush()
-          .x(xScale)
-          .extent([ 0, 1 ])
-          .on('brushend', brushed)
-        svg.append('g')
-          .attr('class', style.extent)
-          .attr('transform', 'translate(' + this.padding.left + ',' + (this.height - this.padding.bottom) + ')')
-          .call(brush)
-          .selectAll('rect')
-          .attr('y', -50)
-          .attr('height', 50)
-        function brushed () {
-          console.log(thisTemp)
-          let extent = d3.event.target.extent()
-          let timeLeft = extent[0].getFullYear() < startYear ? startYear : extent[ 0 ].getFullYear()
-          let timeRight = extent[1].getFullYear() > endYear ? endYear : extent[ 1 ].getFullYear()
-          thisTemp.timeWindowLeft = timeLeft
-          thisTemp.timeWindowRight = timeRight
-        }
-
+      let thisTemp = this // js中的对象类型为引用类型
+      let startYear = this.timeWindowLeft
+      let endYear = this.timeWindowRight
+      let x = d3.scale.ordinal().rangeRoundBands([ 0, this.width - this.padding.left - this.padding.right ])
+      let y = d3.scale.linear().range([ this.height - this.padding.bottom, 0 ])
+      let svg = d3.select('#' + this.elIdSvg)
+      x.domain(d3.range(startYear, endYear + 1))
+      console.log('---->' + d3.range(startYear, endYear + 1))
+      let xAxis = d3.svg.axis().scale(x).tickValues([ 1985, 1990, 1995, 2000, 2005, 2010, 2015 ])
+        .orient('bottom')
+      svg.append('g')
+        .attr('class', style.axis)
+        .attr('transform', 'translate(' + this.padding.left + ',' + (this.height - this.padding.bottom) + ')')
+        .call(xAxis)
+      let brush = d3.svg.brush()
+        .x(x)
+        .extent([ 0, 1 ])
+        .on('brushend', brushed)
+      let brushTime = svg.append('g')
+        .attr('class', style.brush)
+        .attr('transform', 'translate(' + this.padding.left + ',' + (this.height - this.padding.bottom) + ')')
+        .call(brush)
+        .selectAll('rect')
+        .attr('y', -60)
+        .attr('height', 60)
+      svg.selectAll('.extent')
+        .attr('fill', 'steelblue')
+        .attr('fill-opacity', .5)
+      svg.selectAll('.background')
+        .attr('fill', 'steelblue')
+        .attr('fill-opacity', .3)
+        .style('visibility', 'visible')
+      function brushed () {
+        // console.log(thisTemp)
+        y.domain(x.range()).range(x.domain())
+        let extent = brush.extent()
+        console.log('[' + y(extent[ 0 ]) + ',' + y(extent[ 1 ]) + ']')
+        let timeLeft = Math.floor(y(extent[ 0 ])) < startYear ? startYear : Math.floor(y(extent[ 0 ]))
+        let timeRight = Math.floor(y(extent[ 1 ])) > endYear ? endYear : Math.floor(y(extent[ 1 ]))
+        thisTemp.timeWindowLeft = timeLeft
+        thisTemp.timeWindowRight = timeRight
       }
     },
     drawTeamInfo () {
-      let svg = d3.select('#' + this.elIdSvg)
-      svg.selectAll('.rectBrush').remove()
-      svg.append('rect')
-        .attr('class', 'rectBrush')
-        .attr('height', 30)
-        .attr('width', 30)
-        .attr('x', 300)
-        .attr('y', 0)
-        .attr('fill', 'steelblue')
-        .on('mouseover', function () {
-          d3.select(this).style({opacity: '0.5'})
-        })
-        .on('mouseout', function () {
-        d3.select(this).style({opacity: '1'})
-      })
-      console.log(svg.selectAll('.rectBrush'))
+      if (this.teamData) {
+
+        let svg = d3.select('#' + this.elIdSvg)
+        let startYear = this.timeWindowLeft
+        let endYear = this.timeWindowRight
+        let xx = this.padding.top
+        let x = d3.scale.ordinal().rangeRoundBands([ 0, this.width - this.padding.left - this.padding.right ])
+        x.domain(d3.range(startYear, endYear + 1))
+        svg.selectAll('.rectInfo-timeLine').remove()
+        svg.selectAll('.circleInfo-time').remove()
+        svg.selectAll('.rectInfo-timeLine')
+          .data([1996, 1986, 1992, 2009])
+          .enter()
+          .append('rect')
+          .attr('class', '.rectInfo-timeLine')
+          .attr('x', function (d) {
+            return x(d)
+          })
+          .attr('y', function (d) {
+            return xx
+          })
+          .attr('height', function (d) {
+            return 58
+          })
+          .attr('width', 3)
+          .attr('fill', 'black')
+          .on('mouseover', function () {
+            d3.select(this).attr('fill', 'yellow')
+          })
+          .on('mouseout', function () {
+            d3.select(this).attr('fill', 'black')
+          })
+        svg.selectAll('.circleInfo-timeLine')
+          .data([2009, 1992])
+          .enter()
+          .append('circle')
+          .attr('class', '.circleInfo-timeLine')
+          .attr('cx', function (d) {
+            return x(d)-2
+          })
+          .attr('cy', function (d) {
+            return 30
+          })
+          .attr('r', 8)
+          .attr('fill', 'green')
+          .attr('fill-opacity', .6)
+          .on('mouseover', function () {
+            d3.select(this).attr('fill', 'red')
+          })
+          .on('mouseout', function () {
+            d3.select(this).attr('fill', 'green')
+              .attr('fill-opacity', .6)
+          })
+
+      }
     }
   },
   ready () {

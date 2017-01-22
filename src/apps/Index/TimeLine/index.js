@@ -23,7 +23,7 @@ export default{
       teamRecords: null,
       teamColor: null,
       divWidth: 0,
-      divHeight: 0,
+      divHeight: 0
     }
   },
   components: {
@@ -41,7 +41,11 @@ export default{
   events: {
     'time-window': function (msg1, msg2) {
       console.log('收到子组件的消息' + msg1 + ',' + msg2)
-      // this.changeTimeWindow(msg1, msg2)
+      this.changeTimeWindow(msg1, msg2)
+    },
+    'player-id': function (msg) {
+      console.log('队员id变化')
+      this.changeHoverPlayer(msg)
     }
   },
   methods: {
@@ -49,9 +53,9 @@ export default{
       console.log('Action-TimeLine-ChangeTimeWindow')
       this.timeWindowChange(ll, rr)
     },
-    changeHoverPlayer () {
+    changeHoverPlayer (id) {
       console.log('Action-TimeLine-ChangeHoverPlayer')
-      this.hoverPlayerChange(4)
+      this.hoverPlayerChange(id)
     },
     getTeamInfo () {
       let teamIndex = 4
@@ -67,7 +71,6 @@ export default{
       })
     },
     getSize () {
-
       this.divWidth = $('#' + style.TimeLine).width()
       this.divHeight = $('#' + style.TimeLine).height()
       console.log(this.divHeight + ',' + this.divWidth)

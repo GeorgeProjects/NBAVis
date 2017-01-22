@@ -22,7 +22,8 @@ export default {
         bottom: 20
       },
       timeWindowLeft: 1985,
-      timeWindowRight: 2015
+      timeWindowRight: 2015,
+      playerSelect: -1
     }
   },
   watch: {
@@ -33,18 +34,23 @@ export default {
       this.drawTimeLine()
     },
     timeWindowLeft () {
-      console.log(this.timeWindowLeft + ',' + this.timeWindowRight)
+      console.log('changeTimeWindow=======>' + this.timeWindowLeft + ',' + this.timeWindowRight)
       this.$dispatch('time-window', this.timeWindowLeft, this.timeWindowRight)
       console.log('=======>')
     },
     timeWindowRight () {
-      console.log(this.timeWindowLeft + ',' + this.timeWindowRight)
+      console.log('changeTimeWindow======>' + this.timeWindowLeft + ',' + this.timeWindowRight)
       this.$dispatch('time-window', this.timeWindowLeft, this.timeWindowRight)
+      console.log('=======>')
+    },
+    playerSelect () {
+      console.log('changeHoverPlayer======>' + this.playerSelect)
+      this.$dispatch('player-id', this.playerSelect)
       console.log('=======>')
     }
   },
   methods: {
-    drawTimeLine () {
+    drawTimeLine () { // 绘制时间轴，获得长宽数值时调用
       let thisTemp = this // js中的对象类型为引用类型
       let startYear = this.timeWindowLeft
       let endYear = this.timeWindowRight
@@ -71,40 +77,56 @@ export default {
         .attr('y', -60)
         .attr('height', 60)
       svg.selectAll('.extent')
-        .attr('fill', 'steelblue')
-        .attr('fill-opacity', 0.5)
-      svg.selectAll('.background')
-        .attr('fill', 'steelblue')
+        .attr('fill', 'grey')
         .attr('fill-opacity', 0.3)
+      svg.selectAll('.background')
+        .attr('fill', 'grey')
+        .attr('fill-opacity', 0.2)
         .style('visibility', 'visible')
       function brushed () {
         // console.log(thisTemp)
         y.domain(x.range()).range(x.domain())
         let extent = brush.extent()
         console.log('[' + y(extent[ 0 ]) + ',' + y(extent[ 1 ]) + ']')
-        let timeLeft = Math.floor(y(extent[ 0 ])) < startYear ? startYear : Math.floor(y(extent[ 0 ]))
-        let timeRight = Math.floor(y(extent[ 1 ])) > endYear ? endYear : Math.floor(y(extent[ 1 ]))
-        thisTemp.timeWindowLeft = timeLeft
-        thisTemp.timeWindowRight = timeRight
+        if (extent[ 0 ] === extent[ 1 ]) { // 选区为空，重置为全长
+          thisTemp.timeWindowLeft = startYear
+          thisTemp.timeWindowRight = endYear
+        } else {
+          let timeLeft = Math.floor(y(extent[ 0 ])) < startYear ? startYear : Math.floor(y(extent[ 0 ]))
+          let timeRight = Math.floor(y(extent[ 1 ])) > endYear ? endYear : Math.floor(y(extent[ 1 ]))
+          thisTemp.timeWindowLeft = timeLeft
+          thisTemp.timeWindowRight = timeRight
+        }
       }
     },
-    drawTeamInfo () {
-      console.log(this.teamData.teaminfo)
+    drawTeamInfo () { // 绘制时间轴上的队伍信息
       if (this.teamData) {
+        console.log(this.teamData.teaminfo)
+        // 计算总冠军的年份，MVP成员id(push的时候[year, id])
+        let yearChampion = []
+        for (var year in this.teamData.teaminfo) {
+          if (this.teamData.teaminfo[year].best === 1) {
+            yearChampion.push([ parseInt(year), 2 ])  // 2-->this.teamData.teaminfo[year].mvp
+          }
+        }
+        console.log(yearChampion)
+        let thisTemp = this
         let svg = d3.select('#' + this.elIdSvg)
-        let startYear = this.timeWindowLeft
-        let endYear = this.timeWindowRight
+        let startYear = 1985  // 这两个属性对于绘制队伍信息而言是固定的
+        let endYear = 2015
         let x = d3.scale.ordinal().rangeRoundBands([ 0, this.width - this.padding.left - this.padding.right ])
         x.domain(d3.range(startYear, endYear + 1))
+        // 清空svg上原来的元素
         svg.selectAll('.rectInfo-timeLine').remove()
         svg.selectAll('.circleInfo-time').remove()
+        // 绘制总冠军年份的bar
         svg.selectAll('.rectInfo-timeLine')
-          .data([1996, 1986, 1992, 2009])
+          .data(yearChampion)
           .enter()
           .append('rect')
           .attr('class', '.rectInfo-timeLine')
           .attr('x', function (d) {
-            return x(d)
+            return x(d[ 0 ])
           })
           .attr('y', function (d) {
             return 0
@@ -113,20 +135,22 @@ export default {
             return 58
           })
           .attr('width', 3)
-          .attr('fill', 'steelblue')
+          .attr('fill', 'grey')
           .on('mouseover', function () {
             d3.select(this).attr('fill', 'yellow')
+            // 显示信息
           })
           .on('mouseout', function () {
-            d3.select(this).attr('fill', 'steelblue')
+            d3.select(this).attr('fill', 'grey')
           })
+        // 绘制MVP成员
         svg.selectAll('.mvpInfo-timeLine')
-          .data([2009, 1992])
+          .data(yearChampion)
           .enter()
           .append('image')
           .attr('class', '.mvpInfo-timeLine')
           .attr('x', function (d) {
-            return x(d) - 2
+            return x(d[ 0 ]) - 2
           })
           .attr('y', function (d) {
             return 10
@@ -134,33 +158,14 @@ export default {
           .attr('width', 40)
           .attr('height', 40)
           .attr('xling:href', mvp)
-          .on('mouseover', function () {
+          .on('mouseover', function (d) {
             d3.select(this).attr('width', 50).attr('height', 50)
+            // 改变hover的球员id
+            thisTemp.playerSelect = d[ 1 ]
           })
           .on('mouseout', function () {
             d3.select(this).attr('width', 40).attr('height', 40)
           })
-        // svg.selectAll('.circleInfo-timeLine')
-        //   .data([2009, 1992])
-        //   .enter()
-        //   .append('circle')
-        //   .attr('class', '.circleInfo-timeLine')
-        //   .attr('cx', function (d) {
-        //     return x(d) - 2
-        //   })
-        //   .attr('cy', function (d) {
-        //     return 30
-        //   })
-        //   .attr('r', 8)
-        //   .attr('fill', 'green')
-        //   .attr('fill-opacity', 0.6)
-        //   .on('mouseover', function () {
-        //     d3.select(this).attr('fill', 'red')
-        //   })
-        //   .on('mouseout', function () {
-        //     d3.select(this).attr('fill', 'green')
-        //       .attr('fill-opacity', 0.6)
-        //   })
       }
     }
   },

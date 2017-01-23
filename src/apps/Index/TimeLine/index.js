@@ -1,6 +1,5 @@
 import style from './style.less'
 import template from './template.html'
-import $ from 'jquery'
 import {getTeamIndex, getHoverPlayer} from '../../../vuex/getters'
 import {timeWindowChange, hoverPlayerChange} from '../../../vuex/actions'
 import TimeAxis from '../../../components/TimeAxis'

@@ -9,7 +9,7 @@ import mvp from '../../../assets/images/mvp.png'
 
 export default {
   template,
-  props: [ 'width', 'height', 'teamData', 'tColor'],
+  props: ['width', 'height', 'teamData', 'tColor'],
   data () {
     return {
       style,
@@ -57,12 +57,12 @@ export default {
       let thisTemp = this // js中的对象类型为引用类型
       let startYear = this.timeWindowLeft
       let endYear = this.timeWindowRight
-      let x = d3.scale.ordinal().rangeRoundBands([ 0, this.width - this.padding.left - this.padding.right ])
-      let y = d3.scale.linear().range([ this.height - this.padding.bottom, 0 ])
+      let x = d3.scale.ordinal().rangeRoundBands([0, this.width - this.padding.left - this.padding.right])
+      let y = d3.scale.linear().range([this.height - this.padding.bottom, 0])
       let svg = d3.select('#' + this.elIdSvg)
       x.domain(d3.range(startYear, endYear + 1))
       console.log('---->' + d3.range(startYear, endYear + 1))
-      let xAxis = d3.svg.axis().scale(x).tickValues([ 1985, 1990, 1995, 2000, 2005, 2010, 2015 ])
+      let xAxis = d3.svg.axis().scale(x).tickValues([1985, 1990, 1995, 2000, 2005, 2010, 2015])
         .orient('bottom')
       svg.append('g')
         .attr('class', style.axis)
@@ -70,7 +70,7 @@ export default {
         .call(xAxis)
       let brush = d3.svg.brush()
         .x(x)
-        .extent([ 0, 1 ])
+        .extent([0, 1])
         .on('brushend', brushed)
       svg.append('g')
         .attr('class', style.brush)
@@ -90,13 +90,13 @@ export default {
         // console.log(thisTemp)
         y.domain(x.range()).range(x.domain())
         let extent = brush.extent()
-        console.log('[' + y(extent[ 0 ]) + ',' + y(extent[ 1 ]) + ']')
-        if (extent[ 0 ] === extent[ 1 ]) { // 选区为空，重置为全长
+        console.log('[' + y(extent[0]) + ',' + y(extent[1]) + ']')
+        if (extent[0] === extent[1]) { // 选区为空，重置为全长
           thisTemp.timeWindowLeft = startYear
           thisTemp.timeWindowRight = endYear
         } else {
-          let timeLeft = Math.floor(y(extent[ 0 ])) < startYear ? startYear : Math.floor(y(extent[ 0 ]))
-          let timeRight = Math.floor(y(extent[ 1 ])) > endYear ? endYear : Math.floor(y(extent[ 1 ]))
+          let timeLeft = Math.floor(y(extent[0])) < startYear ? startYear : Math.floor(y(extent[0]))
+          let timeRight = Math.floor(y(extent[1])) > endYear ? endYear : Math.floor(y(extent[1]))
           thisTemp.timeWindowLeft = timeLeft
           thisTemp.timeWindowRight = timeRight
         }
@@ -109,7 +109,7 @@ export default {
         let yearChampion = []
         for (var year in this.teamData.teaminfo) {
           if (this.teamData.teaminfo[year].best === 0) {
-            yearChampion.push([ parseInt(year), 2 ])  // 2-->this.teamData.teaminfo[year].mvp
+            yearChampion.push([parseInt(year), 2])  // 2-->this.teamData.teaminfo[year].mvp
           }
         }
         console.log(yearChampion)
@@ -117,7 +117,7 @@ export default {
         let svg = d3.select('#' + this.elIdSvg)
         let startYear = 1985  // 这两个属性对于绘制队伍信息而言是固定的
         let endYear = 2015
-        let x = d3.scale.ordinal().rangeRoundBands([ 0, this.width - this.padding.left - this.padding.right ])
+        let x = d3.scale.ordinal().rangeRoundBands([0, this.width - this.padding.left - this.padding.right])
         x.domain(d3.range(startYear, endYear + 1))
         // 清空svg上原来的元素
         svg.selectAll('.rectInfo-timeLine').remove()
@@ -129,7 +129,7 @@ export default {
           .append('rect')
           .attr('class', '.rectInfo-timeLine')
           .attr('x', function (d) {
-            return x(d[ 0 ])
+            return x(d[0])
           })
           .attr('y', function (d) {
             return 0
@@ -153,7 +153,7 @@ export default {
           .append('image')
           .attr('class', '.mvpInfo-timeLine')
           .attr('x', function (d) {
-            return x(d[ 0 ]) - 2
+            return x(d[0]) - 2
           })
           .attr('y', function (d) {
             return 10
@@ -164,7 +164,7 @@ export default {
           .on('mouseover', function (d) {
             d3.select(this).attr('width', 50).attr('height', 50)
             // 改变hover的球员id
-            thisTemp.playerSelect = d[ 1 ]
+            thisTemp.playerSelect = d[1]
           })
           .on('mouseout', function () {
             d3.select(this).attr('width', 40).attr('height', 40)

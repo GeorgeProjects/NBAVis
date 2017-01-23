@@ -33,10 +33,10 @@ export default {
     AppHeader, StoryLine, PlayerChangements, TimeLine, TeamInfo, PlayerInfo
   },
   created () {
-    this.LOGS.log('My Name1', 123, 456, 788, { a: 123 })
-    this.token = storage.set([ { a: 'Big Data' } ])
+    this.LOGS.log('My Name1', 123, 456, 788, {a: 123})
+    this.token = storage.set([{a: 'Big Data'}])
   },
   ready () {
-    this.LOGS.info('My Name2', [ 1, 2, 3, 4 ], { a: 123 })
+    this.LOGS.info('My Name2', [1, 2, 3, 4], {a: 123})
   }
 }

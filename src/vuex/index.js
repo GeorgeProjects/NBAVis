@@ -14,8 +14,8 @@ const state = {
   ctx: null,
   activeRouter: null,
   timeWindow: {
-    start: 0,
-    end: 0
+    start: 1985,
+    end: 2015
   },
   hoverPlayerIndex: 0,
   teamIndex: 5,

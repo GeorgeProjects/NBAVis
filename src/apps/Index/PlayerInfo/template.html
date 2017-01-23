@@ -2,3 +2,6 @@
     <button v-on:click="changeHoverPlayer">ChangeHoverPlayer</button>
     <button v-on:click="getPlayerInfo">getPlayerInfo</button>
 </div>
+<div class = "{{ style['player-info'] }}">
+    <star-glyph :data-sets = "dataSets" :labels = "labels" :max-valuee = "maxValue" :number = "num"></star-glyph>
+</div>

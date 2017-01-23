@@ -3,6 +3,7 @@ import template from './template.html'
 import $ from 'jquery'
 import {getTeamIndex, getTimeWindow, getSelectedPlayer, getHoverPlayer} from '../../../vuex/getters'
 import {selectedPlayerChange, hoverPlayerChange} from '../../../vuex/actions'
+import BarChart from '../../../components/BarChart'
 
 export default{
   template,
@@ -20,8 +21,19 @@ export default{
   },
   data () {
     return {
-      style
+      style,
+      dataSet1: [ 0, 0 ],
+      dataSet2: [ 0, 0 ],
+      dataSet3: [ 0, 0 ],
+      dataID: [ 0, 0 ],
+      dataSets: [ {
+        type: Array,
+        default: [ [ 0, 0 ] ]
+      } ]
     }
+  },
+  components: {
+    BarChart
   },
   watch: {
     getTeamIndex () {
@@ -50,8 +62,23 @@ export default{
     },
     getTeamPlayerExchange () {
       var teamId = 4
-      $.getJSON('/get_team_player_exchange', {id: teamId}, (teamPlayerExchange) => {
+      $.getJSON('/get_team_player_exchange', { id: teamId }, (teamPlayerExchange) => {
         console.log('teamPlayerExchange', teamPlayerExchange)
+        var labels = [ 'id', '命中', '得分', '盖帽' ]
+        var yearsBegin = 1980
+        // var yearEnd = 1980
+        for (let i = 0; i < labels.length; i++) {
+          this.dataSets[ i ] = new Array()
+          for (let j = 0; j < teamPlayerExchange[ 'teamindex' ][ yearsBegin ].length; j++) {
+            this.dataSets[ i ].push(teamPlayerExchange[ 'teamindex' ][ yearsBegin ][ j ][ labels[ i ] ])
+          }
+          console.log('hello' + this.dataSets[ i ])
+          // console.log(this.dataSets.length)
+        }
+        this.dataID = this.dataSets[ 0 ]
+        this.dataSet1 = this.dataSets[ 1 ]
+        this.dataSet2 = this.dataSets[ 2 ]
+        this.dataSet3 = this.dataSets[ 3 ]
       })
     }
   }

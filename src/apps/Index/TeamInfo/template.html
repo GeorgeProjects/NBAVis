@@ -3,3 +3,17 @@
     <button v-on:click="changeHoverPlayer">ChangeHoverPlayer</button>
     <button v-on:click="getTeamPlayerExchange">getTeamPlayerExchange</button>
 </div>
+<div class = "{{ style['team-info1'] }}">
+    <bar-chart :data-set = "dataSet1" :data-id = "dataID"></bar-chart>
+    <p></p>
+</div>
+<div class = "{{ style['team-info2'] }}">
+    <bar-chart :data-set = "dataSet2" :data-id = "dataID"></bar-chart>
+</div>
+<div class = "{{ style['team-info3'] }}">
+    <bar-chart :data-set = "dataSet3" :data-id = "dataID"></bar-chart>
+</div>
+<!--<div class = "{{ style['team-info2'] }}" id = '444'>-->
+    <!--&lt;!&ndash;<bar-chart id = '44' :data-set = "dataSet"></bar-chart>&ndash;&gt;-->
+    <!--<star-glyph></star-glyph>-->
+<!--</div>-->

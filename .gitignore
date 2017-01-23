@@ -119,7 +119,7 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-.idea
+# .idea
 
 _server/data
 ### Node template
@@ -242,7 +242,7 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-.idea
+# .idea
 
 _server/data
 _assets/data

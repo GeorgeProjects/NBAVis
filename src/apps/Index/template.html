@@ -4,7 +4,7 @@
     </div>
     <div id="{{ style.LeftWrapper }}">
         <div id="{{ style.LeftTopWrapper }}">
-            <story-line></story-line>
+            <story-line :token.sync="token"></story-line>
         </div>
         <div id="{{ style.LeftMiddleWrapper }}">
             <player-changements></player-changements>

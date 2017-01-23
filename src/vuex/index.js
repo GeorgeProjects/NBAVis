@@ -33,6 +33,7 @@ const mutations = {
   },
   [types.TEAM_CHANGE] (state, teamIndex, teamColor) {
     state.teamIndex = {'teamIndex': teamIndex, 'teamColor': teamColor}
+    state.selectedPlayerIndex = []
   },
   [types.HOVER_PLAYER_CHANGE] (state, hoverPlayerIndex) {
     state.hoverPlayerIndex = hoverPlayerIndex

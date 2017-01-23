@@ -31,8 +31,8 @@ const mutations = {
     state.activeRouter = router
     utils.setStatus(state, 'url', types.URL_CHANGE)
   },
-  [types.TEAM_CHANGE] (state, teamIndex) {
-    state.teamIndex = teamIndex
+  [types.TEAM_CHANGE] (state, teamIndex, teamColor) {
+    state.teamIndex = {'teamIndex': teamIndex, 'teamColor': teamColor}
   },
   [types.HOVER_PLAYER_CHANGE] (state, hoverPlayerIndex) {
     state.hoverPlayerIndex = hoverPlayerIndex

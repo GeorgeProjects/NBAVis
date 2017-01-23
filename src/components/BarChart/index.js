@@ -1,34 +1,36 @@
 import style from './style.less'
 import template from './template.html'
 import d3 from 'd3'
-// import $ from 'jquery'
-import 'jquery'
+import $ from 'jquery'
 
 export default {
   template,
-  props: [ 'dataSet' ],
+  props: [ 'dataSet', 'dataId' ],
   data () {
     return {
       style,
-      barChartId: 'BarChart' + Math.ceil(Math.random()*1000),
-      tmpId: 'svg'+Math.ceil(Math.random()*10000)
+      barChartId: 'BarChart' + Math.ceil(Math.random() * 1000),
+      tmpId: 'svg' + Math.ceil(Math.random() * 10000)
     }
   },
   watch: {
     dataSet () {
       console.log('Chang!!')
+      console.log('watch' + this.dataSet)
       this.DrawBarChart()
     }
   },
   methods: {
     DrawBarChart () {
       // 在 body 里添加一个 SVG 画布
-      d3.select('#'+this.tmpId).remove()
-      var width = $('#'+this.barChartId).width()
-      var height = $('#'+this.barChartId).height()
-      var svg = d3.select('#'+this.barChartId)
+      console.log('initial' + this.dataSet)
+      var tmp = this
+      d3.select('#' + this.tmpId).remove()
+      var width = $('#' + this.barChartId).width()
+      var height = $('#' + this.barChartId).height()
+      var svg = d3.select('#' + this.barChartId)
         .append('svg')
-        .attr('class', style['bar-chartsvg'])
+        .attr('class', style[ 'bar-chartsvg' ])
         .attr('id', this.tmpId)
 
       // 画布周边的空白
@@ -77,39 +79,21 @@ export default {
         .attr('height', function (d) {
           return height - padding.top - padding.bottom - yScale(d)
         })
-
-      // 添加文字元素
-      // svg.selectAll('.MyText')
-      //   .data(dataset)
-      //   .enter()
-      //   .append('text')
-      //   .attr('class', style['MyText'])
-      //   .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')')
-      //   .attr('x', function (d, i) {
-      //     return xScale(i) + rectPadding / 2
-      //   })
-      //   .attr('y', function (d) {
-      //     return yScale(d)
-      //   })
-      //   .attr('dx', function () {
-      //     return (xScale.rangeBand() - rectPadding) / 2
-      //   })
-      //   .attr('dy', function (d) {
-      //     return 20
-      //   })
-      //   .text(function (d) {
-      //     return d
-      //   })
-
+        .on('click', function (d, i) {
+          console.log('playerID' + tmp.dataId[ i ])
+        })
+        .on('mouseover', function (d, i) {
+          console.log('playerID' + tmp.dataId[ i ])
+        })
       // 添加x轴
       svg.append('g')
-        .attr('class', style['axis'])
+        .attr('class', style[ 'axis' ])
         .attr('transform', 'translate(' + padding.left + ',' + (height - padding.bottom) + ')')
         .call(xAxis)
 
       // 添加y轴
       svg.append('g')
-        .attr('class', style['axis'])
+        .attr('class', style[ 'axis' ])
         .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')')
         .call(yAxis)
     }

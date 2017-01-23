@@ -14,8 +14,8 @@ const state = {
   ctx: null,
   activeRouter: null,
   timeWindow: {
-    start: 0,
-    end: 0
+    start: 1985,
+    end: 2015
   },
   hoverPlayerIndex: 0,
   teamIndex: 5,
@@ -32,20 +32,21 @@ const mutations = {
     utils.setStatus(state, 'url', types.URL_CHANGE)
   },
   [types.TEAM_CHANGE] (state, teamIndex, teamColor) {
-    state.teamIndex = {teamIndex, teamColor}
+    state.teamIndex = {'teamIndex': teamIndex, 'teamColor': teamColor}
+    state.selectedPlayerIndex = []
   },
   [types.HOVER_PLAYER_CHANGE] (state, hoverPlayerIndex) {
     state.hoverPlayerIndex = hoverPlayerIndex
   },
   [types.TIMEWINDOW_CHANGE] (state, start, end) {
-    state.timeWindow = { start, end }
+    state.timeWindow = {'start': start, 'end': end}
   },
   [types.SELECTED_PLAYER_CHANGE] (state, playerIndex) {
     console.log('playerIndex', playerIndex)
     var newSelectPlayers = []
     var oldSelectPlayers = state.selectedPlayerIndex
     for (let i = 0; i < oldSelectPlayers.length; i++) {
-      newSelectPlayers.push(oldSelectPlayers[ i ])
+      newSelectPlayers.push(oldSelectPlayers[i])
     }
     if (newSelectPlayers.indexOf(playerIndex) === -1) {
       newSelectPlayers.push(playerIndex)

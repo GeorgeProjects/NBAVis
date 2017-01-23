@@ -39,22 +39,14 @@ export default{
   },
   methods: {
     selectedPlayerResponse (selectedPlayer) {
-      $.getJSON('/get_player_info', {id: selectedPlayer}, (playerInfo) => {
-        // console.log('playerInfo', selectedPlayer)
-        this.svg.selectAll('.' + this.style['player-path']).remove()
-        let yearlyData = playerInfo.data
+      // console.log(selectedPlayer)
+      $.getJSON('/get_player_info', {id: selectedPlayer[selectedPlayer.length - 1]}, (playerInfo) => {
+        let yearlyData = playerInfo['teamexperience']
         let pureData = []
-        for (let i in yearlyData) {
-          let year = +yearlyData[i]['赛季'].split('-')[0]
-          let yearstr = ''
-          if (year < 10) {
-            yearstr = '200' + year
-          } else if (year >= 10 && year < 16) {
-            yearstr = '20' + year
-          } else {
-            yearstr = '19' + year
-          }
-          pureData.push({'year': +yearstr, 'team': yearlyData[i]['球队']})
+        console.log('==>', selectedPlayer[selectedPlayer.length - 1])
+        for (let yearstr in yearlyData) {
+          if (yearlyData[yearstr] === '总计') continue
+          pureData.push({'year': +yearstr, 'team': yearlyData[yearstr]})
         }
         pureData.sort((a, b) => {
           return a['year'] - b['year']
@@ -63,7 +55,7 @@ export default{
         let teamPathPoints = this.teamPathPoints
         let teams = Object.keys(teamPathPoints)
         this.svg.selectAll('.' + this.style['team-path']).style('stroke', 'grey').style('opacity', 0.4)
-        let teamColor = this.teamColor
+        let teamColor = this.colorData
         let pointsArray = []
         let beforeTeam = ''
         for (let i in pureData) {
@@ -79,14 +71,21 @@ export default{
           }
           if (team === '') continue
           if (team !== beforeTeam) {
-            beforeTeam = team
+            console.log('==>team', team, teamColor['team' + team])
+            let colorT = ''
+            if (beforeTeam === '') {
+              colorT = team
+            } else {
+              colorT = beforeTeam
+            }
             this.svg.append('path')
               .attr('class', (d, i) => {
                 return this.style['player-path']
               })
               .data([pointsArray])
               .attr('d', d3.svg.line().interpolate('basis'))
-              .style('stroke', teamColor['team' + team])
+              .style('stroke', teamColor['team' + colorT])
+            beforeTeam = team
             pointsArray = []
             pointsArray.push(teamPathPoints[team][(pureData[i]['year'] - this.yStart) * 4])
             pointsArray.push(teamPathPoints[team][(pureData[i]['year'] - this.yStart) * 4 + 1])
@@ -149,6 +148,7 @@ export default{
       let vbias = 0
       let ysquence = sequences[eastOrWest][year]
       let sNum = project[best]
+      // console.log('-->>ss', ysquence, sNum)
       if (sNum === 1) {
         vbias = this.levelHeight * 2.3
       } else if (sNum === 2) {
@@ -242,8 +242,10 @@ export default{
       let project = {'0': 0, '1': 1, '2': 2, '4': 3, '8': 4}
       // console.log(data)
       for (let team in data) {
-        for (let year = this.start; year <= this.end; year++) {
-          // console.log(data[team][year].best)
+        for (let year = this.yStart; year <= this.yEnd; year++) {
+          if (data[team][year] === undefined) {
+            continue
+          }
           let best = project[data[team][year].best]
           let loc = data[team][year].loc
           // console.log('=>', best)
@@ -368,10 +370,13 @@ export default{
               }
             })
             .on('click', function (d, i) {
+              self.svg.selectAll('.' + self.style['player-path']).remove()
               d3.selectAll('.' + style['team-path']).style('opacity', 0.4).style('stroke', 'grey')
               d3.select(this).style('opacity', 1).style('stroke', colorData['team' + item])
               let teamId = d3.select(this).attr('id')
-              self.changeTeamIndex(teams.indexOf(teamId.split('team')[1]), self.colorData[teamId])
+              let teams = Object.keys(self.colorData)
+              console.log('-->click-team', teamId, teams.indexOf(teamId))
+              self.changeTeamIndex(+teams.indexOf(teamId) + 1, self.colorData[teamId])
             })
           let totalLength = path.node().getTotalLength()
           path

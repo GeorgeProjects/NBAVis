@@ -98,7 +98,7 @@ export default {
       var data = []
       if (data1.length === this.number) {
         for (let j = 0; j < data1.length; j++) {
-          data[ j ] = new Array()
+          data[ j ] = []
           for (let i = 0; i < label.length; i++) {
             // data[ j ][ i ][ 'value' ] = data[ j ][ i ][ 'value' ] / this.maxValuee[ i ]
             data[ j ].push({
@@ -336,7 +336,7 @@ export default {
           var x = text.attr('x')
           var dy = parseFloat(text.attr('dy'))
           var tspan = text.text(null).append('tspan').attr('x', x).attr('y', y).attr('dy', dy + 'em')
-          while (word = words.pop()) {
+          while (word === words.pop()) {
             line.push(word)
             tspan.text(line.join(' '))
             if (tspan.node().getComputedTextLength() > width) {

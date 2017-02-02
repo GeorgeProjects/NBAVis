@@ -68,7 +68,7 @@ export default{
         var yearsBegin = 1980
         // var yearEnd = 1980
         for (let i = 0; i < labels.length; i++) {
-          this.dataSets[ i ] = new Array()
+          this.dataSets[ i ] = []
           for (let j = 0; j < teamPlayerExchange[ 'teamindex' ][ yearsBegin ].length; j++) {
             this.dataSets[ i ].push(teamPlayerExchange[ 'teamindex' ][ yearsBegin ][ j ][ labels[ i ] ])
           }

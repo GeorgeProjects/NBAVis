@@ -10,7 +10,7 @@ export default {
     return {
       style,
       starGlyphId: 'StarGlyph' + Math.ceil(Math.random() * 1000),
-      tmpId: 'svg' + Math.ceil(Math.random() * 10000),
+      tmpId: 'svg' + Math.ceil(Math.random() * 100000),
       width: 100,
       dataSetss: []
     }
